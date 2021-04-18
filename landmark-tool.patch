@@ -1,0 +1,182 @@
+Only in landmark-tool: .git
+Only in landmark-tool: .gitignore
+Only in landmark_custom/src: __pycache__
+diff -r landmark-tool/src/landmark.py landmark_custom/src/landmark.py
+7c7
+< from PyQt4 import QtGui
+---
+> from PyQt5 import QtGui, QtWidgets
+12c12
+<     app = QtGui.QApplication(sys.argv)
+---
+>     app = QtWidgets.QApplication(sys.argv)
+diff -r landmark-tool/src/main_win.py landmark_custom/src/main_win.py
+2c2
+< from PyQt4 import QtCore, QtGui
+---
+> from PyQt5 import QtCore, QtGui, QtWidgets
+12c12
+< class MainWin(QtGui.QMainWindow):
+---
+> class MainWin(QtWidgets.QMainWindow):
+14c14
+<         QtGui.QWidget.__init__(self, parent)
+---
+>         QtWidgets.QWidget.__init__(self, parent)
+43c43
+<         self.btnOpen = QtGui.QAction(QtGui.QIcon.fromTheme("folder-open"), "Open Folder", self)
+---
+>         self.btnOpen = QtWidgets.QAction(QtGui.QIcon.fromTheme("folder-open"), "Open Folder", self)
+45c45
+<         self.btnSave = QtGui.QAction(QtGui.QIcon.fromTheme("document-save-as"),
+---
+>         self.btnSave = QtWidgets.QAction(QtGui.QIcon.fromTheme("document-save-as"),
+51c51
+<         self.btnClear = QtGui.QAction(QtGui.QIcon.fromTheme("edit-clear"),
+---
+>         self.btnClear = QtWidgets.QAction(QtGui.QIcon.fromTheme("edit-clear"),
+54c54
+<         self.btnUndo = QtGui.QAction(QtGui.QIcon.fromTheme("edit-undo"),
+---
+>         self.btnUndo = QtWidgets.QAction(QtGui.QIcon.fromTheme("edit-undo"),
+62a63
+>         self.cur_point_num = []
+68c69
+<         fd = QtGui.QFileDialog(self)
+---
+>         fd = QtWidgets.QFileDialog(self)
+80,82c81,83
+<             if not unicode(imgname) in self.points_dict:
+<                 self.points_dict[unicode(imgname)] = []
+<             item = QtGui.QStandardItem(unicode(imgname))
+---
+>             if not str(imgname) in self.points_dict:
+>                 self.points_dict[str(imgname)] = []
+>             item = QtGui.QStandardItem(str(imgname))
+92c93
+<         self.scene = QtGui.QGraphicsScene()
+---
+>         self.scene = QtWidgets.QGraphicsScene()
+95c96
+<         self.cur_img = unicode(str(index.data().toString()))
+---
+>         self.cur_img = index.data()
+102c103,105
+<         pixmap = QtGui.QGraphicsPixmapItem(pixmap, None, self.scene)
+---
+>         #pixmap = QtWidgets.QGraphicsPixmapItem(pixmap, None, self.scene)
+>         pixmap = QtWidgets.QGraphicsPixmapItem(pixmap)
+>         self.scene.addItem(pixmap)
+104c107,114
+<         for item in self.points_dict[self.cur_img]:
+---
+>         for i, item in enumerate(self.points_dict[self.cur_img]):
+>             text = QtWidgets.QGraphicsTextItem(str(i))
+>             font = QtGui.QFont()
+>             font.setPixelSize(20)
+>             text.setFont(font)
+>             text.setPos(item[0] / self.dis_scale, item[1] / self.dis_scale - 40)
+>             self.scene.addItem(text)
+>             self.cur_point_num.append(text)
+113a124,130
+>         text = QtWidgets.QGraphicsTextItem(str(len(self.cur_points)))
+>         font = QtGui.QFont()
+>         font.setPixelSize(20)
+>         text.setFont(font)
+>         text.setPos(event.pos().x(), event.pos().y() - 40)
+>         self.scene.addItem(text)
+>         self.cur_point_num.append(text)
+130c147
+<         with open(self.json_file, "wb") as f:
+---
+>         with open(self.json_file, "w") as f:
+140c157
+<             if last_point and isinstance(last_point, QtGui.QGraphicsEllipseItem):
+---
+>             if last_point and isinstance(last_point, QtWidgets.QGraphicsEllipseItem):
+141a159,162
+>         if self.cur_point_num:
+>             last_point_num = self.cur_point_num.pop()
+>             if last_point_num and isinstance(last_point_num, QtWidgets.QGraphicsTextItem):
+>                 self.scene.removeItem(last_point_num)
+Only in landmark_custom/src/ui: __pycache__
+diff -r landmark-tool/src/ui/main_win_ui.py landmark_custom/src/ui/main_win_ui.py
+9c9
+< from PyQt4 import QtCore, QtGui
+---
+> from PyQt5 import QtCore, QtGui, QtWidgets
+18c18
+<     _encoding = QtGui.QApplication.UnicodeUTF8
+---
+>     _encoding = QtWidgets.QApplication.UnicodeUTF8
+20c20
+<         return QtGui.QApplication.translate(context, text, disambig, _encoding)
+---
+>         return QtWidgets.QApplication.translate(context, text, disambig, _encoding)
+23c23
+<         return QtGui.QApplication.translate(context, text, disambig)
+---
+>         return QtWidgets.QApplication.translate(context, text, disambig)
+28,29c28,29
+<         Landmark.resize(1000, 600)
+<         self.centralwidget = QtGui.QWidget(Landmark)
+---
+>         Landmark.resize(1500, 900)
+>         self.centralwidget = QtWidgets.QWidget(Landmark)
+31,32c31,33
+<         self.gridLayoutWidget = QtGui.QWidget(self.centralwidget)
+<         self.gridLayoutWidget.setGeometry(QtCore.QRect(10, 10, 980, 520))
+---
+>         self.gridLayoutWidget = QtWidgets.QWidget(self.centralwidget)
+>         #self.gridLayoutWidget.setGeometry(QtCore.QRect(10, 10, 980, 520))
+>         self.gridLayoutWidget.setGeometry(QtCore.QRect(10, 10, 1470, 780))
+34c35
+<         self.gridLayout = QtGui.QGridLayout(self.gridLayoutWidget)
+---
+>         self.gridLayout = QtWidgets.QGridLayout(self.gridLayoutWidget)
+36c37
+<         self.imgShow = QtGui.QGraphicsView(self.gridLayoutWidget)
+---
+>         self.imgShow = QtWidgets.QGraphicsView(self.gridLayoutWidget)
+39c40
+<         self.nameList = QtGui.QListView(self.gridLayoutWidget)
+---
+>         self.nameList = QtWidgets.QListView(self.gridLayoutWidget)
+43c44
+<         self.menubar = QtGui.QMenuBar(Landmark)
+---
+>         self.menubar = QtWidgets.QMenuBar(Landmark)
+46c47
+<         self.menuFile = QtGui.QMenu(self.menubar)
+---
+>         self.menuFile = QtWidgets.QMenu(self.menubar)
+48c49
+<         self.menuHelp = QtGui.QMenu(self.menubar)
+---
+>         self.menuHelp = QtWidgets.QMenu(self.menubar)
+51c52
+<         self.statusbar = QtGui.QStatusBar(Landmark)
+---
+>         self.statusbar = QtWidgets.QStatusBar(Landmark)
+54c55
+<         self.toolBar = QtGui.QToolBar(Landmark)
+---
+>         self.toolBar = QtWidgets.QToolBar(Landmark)
+57c58
+<         self.actionOpen_Folder = QtGui.QAction(Landmark)
+---
+>         self.actionOpen_Folder = QtWidgets.QAction(Landmark)
+59c60
+<         self.actionSave_File = QtGui.QAction(Landmark)
+---
+>         self.actionSave_File = QtWidgets.QAction(Landmark)
+61c62
+<         self.actionExit = QtGui.QAction(Landmark)
+---
+>         self.actionExit = QtWidgets.QAction(Landmark)
+63c64
+<         self.actionAbout = QtGui.QAction(Landmark)
+---
+>         self.actionAbout = QtWidgets.QAction(Landmark)
+88d88
+< 
