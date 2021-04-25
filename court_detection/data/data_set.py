@@ -30,9 +30,7 @@ class BdcDataSet(Dataset):
         return len(self.image_paths)
 
     def __getitem__(self, idx) -> TrainData:
-        # TODO: 整理
         p = self.image_paths[idx]
-
         img = Image.open(str(p))
         lmarks = self.landmarks[p.name]
         sample = TrainData(img, lmarks)

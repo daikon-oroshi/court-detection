@@ -1,4 +1,3 @@
-import typing as t
 import torchvision
 
 from ...types.train_data import TrainData

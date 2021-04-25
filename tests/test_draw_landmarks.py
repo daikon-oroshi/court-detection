@@ -1,7 +1,9 @@
 from matplotlib import pyplot as plt
 import torchvision as tv
 from court_detection.data.data_set import BdcDataSet
-from court_detection.data.transforms import (Resize, RandomErasing)
+from court_detection.data.transforms import (
+    Resize, RandomErasing, VerticalFlip
+)
 
 
 class TestDrawLandmark(object):
@@ -13,7 +15,8 @@ class TestDrawLandmark(object):
         transform = tv.transforms.Compose(
             [
                 Resize(size),
-                RandomErasing()
+                RandomErasing(),
+                VerticalFlip()
             ]
         )
         ds = BdcDataSet(self.DIR_PATH, transform=transform)
