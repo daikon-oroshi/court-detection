@@ -7,9 +7,11 @@ authors = ["shimada <bubbleandsqueak10@gmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.8"
 torch = "^1.8.1"
+torchvision = "^0.9.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
+matplotlib = "^3.4.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
