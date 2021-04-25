@@ -1,4 +1,4 @@
-import types as t
+import typing as t
 from dataclasses import dataclass
 from PIL import Image
 

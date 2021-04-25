@@ -1,7 +1,7 @@
-import type as t
+import typing as t
 import torchvision
 
-from ..types.train_data import TrainData
+from ...types.train_data import TrainData
 
 
 class Resize:
