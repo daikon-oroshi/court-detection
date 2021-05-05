@@ -19,7 +19,7 @@ from .data.transforms import (
 def create_model(device: str):
     model_ft = torchvision.models.resnet18(pretrained=True)
     num_ftrs = model_ft.fc.in_features
-    model_ft.fc = nn.Linear(num_ftrs, 16 * 2)
+    model_ft.fc = nn.Linear(num_ftrs, 32)
 
     model_ft = model_ft.to(device)
 
@@ -39,7 +39,7 @@ def train(
     since = time.time()
 
     best_model_wts = copy.deepcopy(model.state_dict())
-    best_acc = 0.0
+    best_loss = 0.0
 
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch, num_epochs - 1))
@@ -54,12 +54,11 @@ def train(
                 model.eval()   # Set model to evaluate mode
 
             running_loss = 0.0
-            running_corrects = 0
 
             # Iterate over data.
-            for inputs, labels in dataloaders[phase]:
-                inputs = inputs.to(device)
-                labels = labels.to(device)
+            for td in dataloaders[phase]:
+                inputs = td['image'].to(device)
+                labels = td['landmarks'].to(device)
 
                 # zero the parameter gradients
                 optimizer.zero_grad()
@@ -69,8 +68,7 @@ def train(
                 with torch.set_grad_enabled(phase == 'train'):
                     outputs = model(inputs)
                     # tensor(max, max_indices)なのでpredは0,1のラベル
-                    _, preds = torch.max(outputs, 1)
-                    loss = criterion(outputs, labels)
+                    loss = criterion(outputs.float(), labels.float())
 
                     # backward + optimize only if in training phase
                     if phase == 'train':
@@ -79,17 +77,14 @@ def train(
 
                 # statistics
                 running_loss += loss.item() * inputs.size(0)
-                running_corrects += torch.sum(preds == labels.data)
 
             epoch_loss = running_loss / dataset_sizes[phase]
-            epoch_acc = running_corrects.double() / dataset_sizes[phase]
 
-            print('{} Loss: {:.4f} Acc: {:.4f}'.format(
-                phase, epoch_loss, epoch_acc))
+            print('{} Loss: {:.4f}'.format(phase, epoch_loss))
 
             # deep copy the model
-            if phase == 'val' and epoch_acc > best_acc:
-                best_acc = epoch_acc
+            if phase == 'val' and best_loss > epoch_loss:
+                best_loss = epoch_loss
                 best_model_wts = copy.deepcopy(model.state_dict())
 
         print()
@@ -97,7 +92,7 @@ def train(
     time_elapsed = time.time() - since
     print('Training complete in {:.0f}m {:.0f}s'.format(
         time_elapsed // 60, time_elapsed % 60))
-    print('Best val Acc: {:4f}'.format(best_acc))
+    print('Best val Loss: {:4f}'.format(best_loss))
 
     # load best model weights
     model.load_state_dict(best_model_wts)
@@ -111,14 +106,14 @@ def create_dataloader(img_paths: str, land_path: str):
     norm_std = [0.229, 0.224, 0.225]
 
     data_transforms = {
-        phase[0]: torch.transforms.Compose([
+        phase[0]: torchvision.transforms.Compose([
             Resize(size),
-            RandomErasing(),
+            RandomErasing(scale=(0.02, 0.15)),
             VerticalFlip(),
             ToTensor(),
             Normalize(norm_mean, norm_std)
         ]),
-        phase[1]: torch.transforms.Compose([
+        phase[1]: torchvision.transforms.Compose([
             Resize(size),
             ToTensor(),
             Normalize(norm_mean, norm_std)

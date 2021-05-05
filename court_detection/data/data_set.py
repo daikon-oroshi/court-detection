@@ -29,7 +29,7 @@ class BdcDataSet(Dataset):
 
     def __getitem__(self, idx) -> TrainData:
         p = self.image_files[idx]
-        img = Image.open(str(p))
+        img = Image.open(str(p)).convert('RGB')
         lmarks = self.landmarks[p.name]
 
         sample = {
