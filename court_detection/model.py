@@ -132,7 +132,7 @@ def create_dataloader(img_paths: str, land_path: str):
     dataloaders = {
         x: torch.utils.data.DataLoader(
             image_datasets[x], batch_size=4,
-            shuffle=True, num_workers=4
+            shuffle=True, num_workers=1
         ) for x in phase
     }
 
