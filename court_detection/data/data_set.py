@@ -1,5 +1,4 @@
 import typing as t
-import os
 import json
 import re
 from pathlib import Path
@@ -11,26 +10,25 @@ from ..types.train_data import TrainData
 
 class BdcDataSet(Dataset):
 
-    def __init__(self, dir_path: str, transform=None):
+    def __init__(self, img_path: str, land_path: str, transform=None):
         super().__init__()
 
-        self.dir_path = dir_path
         self.transform = transform
 
-        self.image_paths = [
-            p for p in Path(self.dir_path).glob("**/*")
+        self.image_files = [
+            p for p in Path(img_path).glob("**/*")
             if re.search('/*.(jpg|png)', str(p))
         ]
-        with open(os.path.join(self.dir_path, "landmarks.json")) as lm:
+        with open(land_path) as lm:
             landmarks = json.load(lm)
 
         self.landmarks = self.__normalize_landmarks(landmarks)
 
     def __len__(self) -> int:
-        return len(self.image_paths)
+        return len(self.image_files)
 
     def __getitem__(self, idx) -> TrainData:
-        p = self.image_paths[idx]
+        p = self.image_files[idx]
         img = Image.open(str(p))
         lmarks = self.landmarks[p.name]
         sample = TrainData(img, lmarks)
@@ -43,7 +41,7 @@ class BdcDataSet(Dataset):
     def __normalize_landmarks(self, landmarks) -> t.Dict:
         norm_lands = {}
 
-        for p in self.image_paths:
+        for p in self.image_files:
             lmarks = landmarks[p.name]
             img = Image.open(str(p))
             (width, height) = img.size

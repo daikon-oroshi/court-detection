@@ -8,7 +8,8 @@ from court_detection.data.transforms import (
 
 class TestDrawLandmark(object):
 
-    DIR_PATH = "../resources/image/court"
+    IMG_PATH = "../resources/image/court"
+    LAND_PATH = "../resources/image/court/landmarks.json"
 
     def test_draw_landmark(self):
         size = (224, 224)
@@ -19,7 +20,7 @@ class TestDrawLandmark(object):
                 VerticalFlip()
             ]
         )
-        ds = BdcDataSet(self.DIR_PATH, transform=transform)
+        ds = BdcDataSet(self.IMG_PATH, self.LAND_PATH, transform=transform)
         for i in range(0, min(9, len(ds))):
 
             train_data = ds[i]
