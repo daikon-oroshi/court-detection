@@ -39,7 +39,7 @@ def train(
     since = time.time()
 
     best_model_wts = copy.deepcopy(model.state_dict())
-    best_loss = 0.0
+    best_loss = None
 
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch, num_epochs - 1))
@@ -83,7 +83,8 @@ def train(
             print('{} Loss: {:.4f}'.format(phase, epoch_loss))
 
             # deep copy the model
-            if phase == 'val' and best_loss > epoch_loss:
+            if phase == 'val' and \
+                    (best_loss is None or best_loss > epoch_loss):
                 best_loss = epoch_loss
                 best_model_wts = copy.deepcopy(model.state_dict())
 
@@ -108,7 +109,7 @@ def create_dataloader(img_paths: str, land_path: str):
     data_transforms = {
         phase[0]: torchvision.transforms.Compose([
             Resize(size),
-            RandomErasing(scale=(0.02, 0.15)),
+            #RandomErasing(scale=(0.02, 0.15)),
             VerticalFlip(),
             ToTensor(),
             Normalize(norm_mean, norm_std)

@@ -20,7 +20,8 @@ if __name__ == "__main__":
         optimizer_ft,
         exp_lr_scheduler,
         dataloaders,
-        dataset_sizes
+        dataset_sizes,
+        num_epochs=50
     )
 
     torch.save(model_tr.state_dict(), save_path)
