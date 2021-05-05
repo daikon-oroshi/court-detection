@@ -31,7 +31,11 @@ class BdcDataSet(Dataset):
         p = self.image_files[idx]
         img = Image.open(str(p))
         lmarks = self.landmarks[p.name]
-        sample = TrainData(img, lmarks)
+
+        sample = {
+            'image': img,
+            'landmarks': lmarks
+        }
 
         if self.transform:
             sample = self.transform(sample)

@@ -24,12 +24,12 @@ class TestDrawLandmark(object):
         for i in range(0, min(9, len(ds))):
 
             train_data = ds[i]
-            for pt in train_data.landmarks:
+            for pt in train_data['landmarks']:
                 plt.plot(
                     size[0] * pt[0], size[1] * pt[1],
                     marker='x', color="red"
                 )
-            plt.imshow(train_data.image)
+            plt.imshow(train_data['image'])
             plt.show()
 
 

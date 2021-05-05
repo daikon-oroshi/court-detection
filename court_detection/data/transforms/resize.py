@@ -1,6 +1,5 @@
 import typing as t
 import torchvision
-from ...types.train_data import TrainData
 
 
 class Resize:
@@ -10,9 +9,8 @@ class Resize:
         self.output_size = output_size
         self.transform = torchvision.transforms.Resize(output_size)
 
-    def __call__(self, sample: TrainData) -> TrainData:
-
-        return TrainData(
-            self.transform(sample.image),
-            sample.landmarks
-        )
+    def __call__(self, sample):
+        return {
+            'image': self.transform(sample['image']),
+            'landmarks': sample['landmarks']
+        }
