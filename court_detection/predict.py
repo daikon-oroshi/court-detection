@@ -19,33 +19,23 @@ if __name__ == "__main__":
 
     net.eval()
 
-    size = (224, 224)
-    norm_mean = [0.485, 0.456, 0.406]
-    norm_std = [0.229, 0.224, 0.225]
-
-    transform = tv.transforms.Compose(
-        [
-            Resize(size),
-            ToTensor(),
-            Normalize(norm_mean, norm_std)
-        ]
-    )
-
-    img = Image.open(img_path).convert('RGB')
-    img.load()
-    img_size = img.size
-
-    img_trans = transform({'image': img, 'landmarks': []})['image']
-    img_trans = img_trans[:3, :, :].unsqueeze(0)
+    dataloaders, _ = model.create_dataloader(img_path, None)
+    dataloaders = iter(dataloaders['train'])
 
     with torch.no_grad():
-        lms = net(img_trans.to('cpu')).flatten().tolist()
-    print(lms)
+        to_pil = tv.transforms.ToPILImage()
+        for sample in dataloaders:
 
-    for i in range(0, len(lms), 2):
-        plt.plot(
-            img_size[0] * lms[i], img_size[1] * lms[i + 1],
-            marker='x', color="red"
-        )
-    plt.imshow(img)
-    plt.show()
+            lms = net(sample['image'].to('cpu'))
+
+            for d in range(lms.size()[0]):
+
+                lm = lms[d, :].flatten().tolist()
+                img = sample['image'][d, :, :, :]
+                for i in range(0, len(lm), 2):
+                    plt.plot(
+                        224 * lm[i], 224 * lm[i + 1],
+                        marker='x', color="red"
+                    )
+                plt.imshow(to_pil(img).convert("RGB"))
+                plt.show()

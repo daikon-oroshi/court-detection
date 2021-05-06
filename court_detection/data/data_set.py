@@ -19,10 +19,12 @@ class BdcDataSet(Dataset):
             p for p in Path(img_path).glob("**/*")
             if re.search('/*.(jpg|png)', str(p))
         ]
-        with open(land_path) as lm:
-            landmarks = json.load(lm)
-
-        self.landmarks = self.__normalize_landmarks(landmarks)
+        if land_path is not None:
+            with open(land_path) as lm:
+                landmarks = json.load(lm)
+            self.landmarks = self.__normalize_landmarks(landmarks)
+        else:
+            self.landmarks = {}
 
     def __len__(self) -> int:
         return len(self.image_files)
@@ -31,7 +33,7 @@ class BdcDataSet(Dataset):
         p = self.image_files[idx]
         img = Image.open(str(p)).convert('RGB')
         img.load()
-        lmarks = self.landmarks[p.name]
+        lmarks = self.landmarks.get(p.name, [])
 
         sample = {
             'image': img,

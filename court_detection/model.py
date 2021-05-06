@@ -48,7 +48,6 @@ def train(
         # Each epoch has a training and validation phase
         for phase in ['train', 'val']:
             if phase == 'train':
-                scheduler.step()
                 model.train()  # Set model to training mode
             else:
                 model.eval()   # Set model to evaluate mode
@@ -74,6 +73,7 @@ def train(
                     if phase == 'train':
                         loss.backward()
                         optimizer.step()
+                        scheduler.step()
 
                 # statistics
                 running_loss += loss.item() * inputs.size(0)
@@ -109,7 +109,7 @@ def create_dataloader(img_paths: str, land_path: str):
     data_transforms = {
         phase[0]: torchvision.transforms.Compose([
             Resize(size),
-            #RandomErasing(scale=(0.02, 0.15)),
+            RandomErasing(scale=(0.02, 0.15)),
             VerticalFlip(),
             ToTensor(),
             Normalize(norm_mean, norm_std)
@@ -146,6 +146,6 @@ def create_optimizer(model_ft):
 
     # Decay LR by a factor of 0.1 every 7 epochs
     exp_lr_scheduler = optim.lr_scheduler.StepLR(
-        optimizer_ft, step_size=7, gamma=0.1)
+        optimizer_ft, step_size=3, gamma=0.1)
 
     return optimizer_ft, exp_lr_scheduler
