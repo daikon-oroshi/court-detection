@@ -14,13 +14,14 @@ if __name__ == "__main__":
     model_path = sys.argv[1]
     img_path = sys.argv[2]
 
-    net = model.create_model('cpu')
+    net = model.Net(32)
+    net.to('cpu')
     net.load_state_dict(torch.load(model_path))
 
     net.eval()
 
     dataloaders, _ = model.create_dataloader(img_path, None)
-    dataloaders = iter(dataloaders['train'])
+    dataloaders = iter(dataloaders['val'])
 
     with torch.no_grad():
         to_pil = tv.transforms.ToPILImage()

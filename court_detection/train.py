@@ -8,17 +8,22 @@ if __name__ == "__main__":
     land_path = sys.argv[2]
     save_path = sys.argv[3]
 
-    model_ft = model.create_model('cpu')
+    net = model.Net(32)
+    # model_ft = model.create_model(32)
+    net.to('cpu')
     dataloaders, dataset_sizes = model.create_dataloader(img_path, land_path)
-    optimizer_ft, exp_lr_scheduler = model.create_optimizer(model_ft)
+    learning_rate = 1e-4
+    optimizer_ft = torch.optim.Adam(net.parameters(), lr=learning_rate)
+    # optimizer_ft, exp_lr_scheduler = model.create_optimizer(model_ft)
     criterion = torch.nn.MSELoss()
+    # criterion = model.PointLoss()
 
     model_tr = model.train(
         'cpu',
-        model_ft,
+        net,
         criterion,
         optimizer_ft,
-        exp_lr_scheduler,
+        None,
         dataloaders,
         dataset_sizes,
         num_epochs=50
