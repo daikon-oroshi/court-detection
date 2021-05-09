@@ -4,6 +4,7 @@ import torchvision as tv
 from PIL import Image
 from matplotlib import pyplot as plt
 from . import model
+from . import util
 from court_detection.data.transforms import (
     Resize,
     ToTensor,
@@ -35,7 +36,7 @@ if __name__ == "__main__":
                 img = sample['image'][d, :, :, :]
                 for i in range(0, len(lm), 2):
                     plt.plot(
-                        224 * lm[i], 224 * lm[i + 1],
+                        *util.to_img_coord(lm[i:i+1], (224, 224)),
                         marker='x', color="red"
                     )
                 plt.imshow(to_pil(img).convert("RGB"))

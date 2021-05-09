@@ -12,7 +12,7 @@ class VerticalFlip:
         self.p = p
 
     def mirror(self, x: float) -> float:
-        return 1 - x
+        return -x
 
     def __call__(self, sample) -> t.Tuple:
 

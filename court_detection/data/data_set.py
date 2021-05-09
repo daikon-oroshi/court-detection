@@ -6,6 +6,7 @@ from PIL import Image
 from torch.utils.data import Dataset
 
 from ..types.train_data import TrainData
+from .. import util
 
 
 class BdcDataSet(Dataset):
@@ -52,9 +53,8 @@ class BdcDataSet(Dataset):
             lmarks = landmarks[p.name]
             img = Image.open(str(p)).convert('RGB')
             img.load()
-            (width, height) = img.size
             norm_lands[p.name] = list(map(
-                lambda x: [x[0] / width, x[1] / height],
+                lambda x: util.to_ml_coord(x, img.size),
                 lmarks
             ))
 

@@ -23,6 +23,7 @@ class Net(nn.Module):
         super(Net, self).__init__()
 
         resnet = torchvision.models.resnet152(pretrained=pretrained)
+        # resnet = torchvision.models.resnet18(pretrained=pretrained)
         num_ftrs = resnet.fc.in_features
         self.resnet_base = nn.Sequential(*list(resnet.children())[:-1])
         self.fc = nn.Linear(num_ftrs, output_size)
@@ -138,7 +139,7 @@ def create_dataloader(img_paths: str, land_path: str):
     data_transforms = {
         phase[0]: torchvision.transforms.Compose([
             Resize(size),
-            # RandomErasing(scale=(0.02, 0.15)),
+            RandomErasing(scale=(0.02, 0.15)),
             VerticalFlip(),
             ToTensor(),
             Normalize(norm_mean, norm_std)
