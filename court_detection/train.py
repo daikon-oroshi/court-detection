@@ -12,11 +12,11 @@ if __name__ == "__main__":
     # model_ft = model.create_model(32)
     net.to('cpu')
     dataloaders, dataset_sizes = model.create_dataloader(img_path, land_path)
-    learning_rate = 1e-4
+    learning_rate = 1e-2
     optimizer_ft = torch.optim.Adam(net.parameters(), lr=learning_rate)
     # optimizer_ft, exp_lr_scheduler = model.create_optimizer(model_ft)
-    criterion = torch.nn.MSELoss()
-    # criterion = model.PointLoss()
+    # criterion = torch.nn.MSELoss()
+    criterion = model.WingLoss()
 
     model_tr = model.train(
         'cpu',
@@ -26,7 +26,7 @@ if __name__ == "__main__":
         None,
         dataloaders,
         dataset_sizes,
-        num_epochs=50
+        num_epochs=100
     )
 
     torch.save(model_tr.state_dict(), save_path)

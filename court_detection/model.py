@@ -6,6 +6,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 import torchvision
+import math
 
 from .data.data_set import BdcDataSet
 from .data.transforms import (
@@ -36,7 +37,7 @@ class Net(nn.Module):
         return h
 
 
-class PointLoss(nn.Module):
+class RMSELoss(nn.Module):
 
     def __init__(self, pt_dim=2):
         super().__init__()
@@ -45,18 +46,40 @@ class PointLoss(nn.Module):
     def forward(self, output, target):
         sp_out = torch.split(output, self.pt_dim, dim=1)
         sp_tar = torch.split(target, self.pt_dim, dim=1)
-        print(sp_out)
-        print(sp_tar)
 
         # root取らないので普通のmse_lossと同じ
         pt_wise_loss = [
-            F.mse_loss(o.float(), t.float())
+            self.pt_loss(o.float(), t.float())
             for o, t in zip(sp_out, sp_tar)
         ]
-        print(pt_wise_loss)
-        loss = torch.mean(torch.stack(pt_wise_loss))
+        loss = torch.stack(pt_wise_loss, dim=1)
+        loss = torch.mean(loss)
 
         return loss
+
+    def pt_loss(self, o, t):
+        l2 = torch.sqrt(torch.sum(
+            torch.pow(torch.sub(o, t), 2),
+            dim=1))
+        return l2
+
+
+class WingLoss(nn.Module):
+    def __init__(self, omega=10, epsilon=2):
+        super(WingLoss, self).__init__()
+        self.omega = omega
+        self.epsilon = epsilon
+
+    def forward(self, pred, target):
+        y = target
+        y_hat = pred
+        delta_y = (y - y_hat).abs()
+        delta_y1 = delta_y[delta_y < self.omega]
+        delta_y2 = delta_y[delta_y >= self.omega]
+        loss1 = self.omega * torch.log(1 + delta_y1 / self.epsilon)
+        C = self.omega - self.omega * math.log(1 + self.omega / self.epsilon)
+        loss2 = delta_y2 - C
+        return (loss1.sum() + loss2.sum()) / (len(loss1) + len(loss2))
 
 
 def train(
@@ -109,14 +132,16 @@ def train(
                 running_loss += loss.item() * inputs.size(0)
 
             epoch_loss = running_loss / dataset_sizes[phase]
-
             print('{} Loss: {:.4f}'.format(phase, epoch_loss))
 
             # deep copy the model
-            if phase == 'val' and \
+            if phase == 'val' and not math.isnan(epoch_loss) and \
                     (best_loss is None or best_loss > epoch_loss):
                 best_loss = epoch_loss
                 best_model_wts = copy.deepcopy(net.state_dict())
+
+            if phase == 'val' and best_loss is not None:
+                print('BEST Loss: {:.4f}'.format(best_loss))
 
         print()
 
@@ -130,7 +155,7 @@ def train(
     return net
 
 
-def create_dataloader(img_paths: str, land_path: str):
+def create_dataloader(img_paths: str, land_path: str, batch_size=4):
     phase = ['train', 'val']
     size = (224, 224)
     norm_mean = [0.485, 0.456, 0.406]
@@ -139,7 +164,7 @@ def create_dataloader(img_paths: str, land_path: str):
     data_transforms = {
         phase[0]: torchvision.transforms.Compose([
             Resize(size),
-            RandomErasing(scale=(0.02, 0.15)),
+            # RandomErasing(scale=(0.02, 0.15)),
             VerticalFlip(),
             ToTensor(),
             Normalize(norm_mean, norm_std)
@@ -161,7 +186,7 @@ def create_dataloader(img_paths: str, land_path: str):
 
     dataloaders = {
         x: torch.utils.data.DataLoader(
-            image_datasets[x], batch_size=4,
+            image_datasets[x], batch_size=batch_size,
             shuffle=True, num_workers=1
         ) for x in phase
     }

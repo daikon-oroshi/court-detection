@@ -13,7 +13,7 @@ def to_img(x, img_x):
 def to_ml_coord(pt, img_size):
     return [
         to_ml(pt[0], img_size[0]),
-        to_ml(pt[1], img_size[1]),
+        to_ml(pt[1], img_size[1])
     ]
 
 

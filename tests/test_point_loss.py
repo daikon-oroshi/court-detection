@@ -1,28 +1,28 @@
 import torch
-from court_detection.model import PointLoss
+from court_detection.model import RMELoss
 import torch.nn.functional as F
 
 
 class TestPointLoss(object):
 
     def test_point_loss(self):
-        point_loss = PointLoss()
+        point_loss = RMELoss()
 
         output = torch.tensor(
             [
-             [0, 1, 2, 3, 4, 5, 6, 7],
-             [0, 1, 2, 3, 4, 5, 6, 7],
-             [8, 9, 10, 11, 12, 13, 14, 15],
-             [8, 9, 10, 11, 12, 13, 14, 15],
+             [0, 1, 2, 3, 4, 5],
+             [0, 1, 2, 3, 4, 5],
+             [8, 9, 10, 11, 12, 13],
+             [8, 9, 10, 11, 12, 13],
             ]
         )
         target = torch.tensor(
             [
-             [0, 0, 0, 0, 4, 5, 6, 7],
-             [16, 17, 18, 19, 20, 21, 22, 23],
-             [16, 17, 18, 19, 20, 21, 22, 23],
-             [24, 25, 26, 27, 28, 29, 30, 31],
-             [24, 25, 26, 27, 28, 29, 30, 31],
+             [0, 0, 0, 0, 0, 0],
+             [16, 17, 18, 19, 20, 21],
+             [16, 17, 18, 19, 20, 21],
+             [24, 25, 26, 27, 28, 29],
+             # [24, 25, 26, 27, 28, 29, 30, 31],
             ]
         )
         print(output.size())
