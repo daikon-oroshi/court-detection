@@ -3,3 +3,4 @@ from .resize import Resize  # noqa
 from .vertical_flip import VerticalFlip  # noqa
 from .to_tensor import ToTensor  # noqa
 from .normalize import Normalize  # noqa
+from .grayscale import Grayscale  # noqa

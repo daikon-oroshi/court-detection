@@ -3,7 +3,8 @@ import torchvision as tv
 from court_detection import util
 from court_detection.data.data_set import BdcDataSet
 from court_detection.data.transforms import (
-    Resize, RandomErasing, VerticalFlip
+    Resize, RandomErasing,
+    VerticalFlip, Grayscale
 )
 
 
@@ -18,7 +19,8 @@ class TestDrawLandmark(object):
             [
                 Resize(size),
                 RandomErasing(),
-                VerticalFlip()
+                VerticalFlip(),
+                Grayscale()
             ]
         )
         ds = BdcDataSet(self.IMG_PATH, self.LAND_PATH, transform=transform)

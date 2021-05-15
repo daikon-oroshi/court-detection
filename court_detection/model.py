@@ -1,5 +1,3 @@
-import time
-import copy
 import os
 import torch
 import torch.nn as nn
@@ -14,17 +12,21 @@ from .data.transforms import (
     Resize,
     VerticalFlip,
     ToTensor,
+    Grayscale,
     Normalize
 )
 
 
 class Net(nn.Module):
 
-    def __init__(self, output_size, pretrained=True):
+    def __init__(self, output_size, pretrained=True, grayscale=False):
         super(Net, self).__init__()
 
         resnet = torchvision.models.resnet152(pretrained=pretrained)
         # resnet = torchvision.models.resnet18(pretrained=pretrained)
+        if grayscale:
+            resnet.conv1 = nn.Conv2d(
+                1, 64, kernel_size=7, stride=2, padding=3, bias=False)
         num_ftrs = resnet.fc.in_features
         self.resnet_base = nn.Sequential(*list(resnet.children())[:-1])
         self.fc = nn.Linear(num_ftrs, output_size)
@@ -82,79 +84,6 @@ class WingLoss(nn.Module):
         return (loss1.sum() + loss2.sum()) / (len(loss1) + len(loss2))
 
 
-def train(
-    device,
-    net,
-    criterion,
-    optimizer,
-    scheduler,
-    dataloaders,
-    dataset_sizes,
-    num_epochs=25
-):
-    since = time.time()
-
-    best_model_wts = copy.deepcopy(net.state_dict())
-    best_loss = None
-
-    for epoch in range(num_epochs):
-        print('Epoch {}/{}'.format(epoch, num_epochs - 1))
-        print('-' * 10)
-
-        # Each epoch has a training and validation phase
-        for phase in ['train', 'val']:
-            if phase == 'train':
-                net.train()  # Set model to training mode
-            else:
-                net.eval()   # Set model to evaluate mode
-
-            running_loss = 0.0
-
-            # Iterate over data.
-            for td in dataloaders[phase]:
-                inputs = td['image'].to(device)
-                labels = td['landmarks'].to(device)
-
-                # zero the parameter gradients
-                optimizer.zero_grad()
-
-                # forward
-                # track history if only in train
-                with torch.set_grad_enabled(phase == 'train'):
-                    outputs = net(inputs)
-                    loss = criterion(outputs.float(), labels.float())
-
-                    if phase == 'train':
-                        loss.backward()
-                        optimizer.step()
-
-                # statistics
-                running_loss += loss.item() * inputs.size(0)
-
-            epoch_loss = running_loss / dataset_sizes[phase]
-            print('{} Loss: {:.4f}'.format(phase, epoch_loss))
-
-            # deep copy the model
-            if phase == 'val' and not math.isnan(epoch_loss) and \
-                    (best_loss is None or best_loss > epoch_loss):
-                best_loss = epoch_loss
-                best_model_wts = copy.deepcopy(net.state_dict())
-
-            if phase == 'val' and best_loss is not None:
-                print('BEST Loss: {:.4f}'.format(best_loss))
-
-        print()
-
-    time_elapsed = time.time() - since
-    print('Training complete in {:.0f}m {:.0f}s'.format(
-        time_elapsed // 60, time_elapsed % 60))
-    print('Best val Loss: {:4f}'.format(best_loss))
-
-    # load best model weights
-    net.load_state_dict(best_model_wts)
-    return net
-
-
 def create_dataloader(img_paths: str, land_path: str, batch_size=4):
     phase = ['train', 'val']
     size = (224, 224)
@@ -167,12 +96,14 @@ def create_dataloader(img_paths: str, land_path: str, batch_size=4):
             # RandomErasing(scale=(0.02, 0.15)),
             VerticalFlip(),
             ToTensor(),
-            Normalize(norm_mean, norm_std)
+            # Normalize(norm_mean, norm_std)
+            Grayscale()
         ]),
         phase[1]: torchvision.transforms.Compose([
             Resize(size),
             ToTensor(),
-            Normalize(norm_mean, norm_std)
+            # Normalize(norm_mean, norm_std),
+            Grayscale()
         ]),
     }
 

@@ -1,5 +1,5 @@
 
-FACTOR = 100
+FACTOR = 1
 
 
 def to_ml(x, img_x):

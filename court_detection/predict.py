@@ -9,7 +9,7 @@ if __name__ == "__main__":
     model_path = sys.argv[1]
     img_path = sys.argv[2]
 
-    net = model.Net(32)
+    net = model.Net(32, grayscale=True)
     net.to('cpu')
     net.load_state_dict(torch.load(model_path))
 
@@ -17,7 +17,7 @@ if __name__ == "__main__":
 
     land_path = "data/train_data/landmarks.json"
     dataloaders, _ = model.create_dataloader(img_path, land_path, 1)
-    dataloaders = iter(dataloaders['train'])
+    dataloaders = iter(dataloaders['val'])
 
     with torch.no_grad():
         to_pil = tv.transforms.ToPILImage()
