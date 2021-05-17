@@ -1,6 +1,3 @@
-Only in landmark-tool: .git
-Only in landmark-tool: .gitignore
-Only in landmark_custom/src: __pycache__
 diff -r landmark-tool/src/landmark.py landmark_custom/src/landmark.py
 7c7
 < from PyQt4 import QtGui
