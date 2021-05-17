@@ -5,7 +5,6 @@ from pathlib import Path
 from PIL import Image
 from torch.utils.data import Dataset
 
-from ..types.train_data import TrainData
 from .. import util
 
 
@@ -30,7 +29,7 @@ class BdcDataSet(Dataset):
     def __len__(self) -> int:
         return len(self.image_files)
 
-    def __getitem__(self, idx) -> TrainData:
+    def __getitem__(self, idx):
         p = self.image_files[idx]
         img = Image.open(str(p)).convert('RGB')
         img.load()
