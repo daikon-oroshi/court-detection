@@ -27,10 +27,15 @@ class TestDrawLandmark(object):
         for i in range(0, min(9, len(ds))):
 
             train_data = ds[i]
-            for pt in train_data['landmarks']:
+            for pt_idx, pt in enumerate(train_data['landmarks']):
+                img_coord = util.to_img_coord(pt, size)
                 plt.plot(
-                    *util.to_img_coord(pt, size),
-                    marker='x', color="red"
+                    *img_coord,
+                    c='r'
+                )
+                plt.text(
+                    *img_coord,
+                    str(pt_idx)
                 )
             plt.imshow(train_data['image'])
             plt.show()
