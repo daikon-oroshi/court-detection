@@ -31,6 +31,7 @@ class TestDrawLandmark(object):
                 img_coord = util.to_img_coord(pt, size)
                 plt.plot(
                     *img_coord,
+                    marker='.',
                     c='r'
                 )
                 plt.text(
