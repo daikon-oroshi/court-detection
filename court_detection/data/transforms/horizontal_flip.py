@@ -3,7 +3,7 @@ import PIL
 import random
 
 
-class VerticalFlip:
+class HorizontalFlip:
 
     def __init__(
         self,

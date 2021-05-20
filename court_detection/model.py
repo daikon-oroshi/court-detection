@@ -10,7 +10,7 @@ from .data.data_set import BdcDataSet
 from .data.transforms import (
     RandomErasing,
     Resize,
-    VerticalFlip,
+    HorizontalFlip,
     ToTensor,
     Grayscale,
     Normalize
@@ -76,7 +76,7 @@ def create_dataloader(img_paths: str, land_path: str, batch_size=4):
         phase[0]: torchvision.transforms.Compose([
             Resize(size),
             RandomErasing(scale=(0.02, 0.15)),
-            VerticalFlip(),
+            HorizontalFlip(),
             ToTensor(),
             # Grayscale(),
             # Normalize([0.5], [0.5]),
