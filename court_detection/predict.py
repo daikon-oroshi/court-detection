@@ -32,11 +32,14 @@ if __name__ == "__main__":
                 lm = lms[d, :].flatten().tolist()
                 img = sample['image'][d, :, :, :]
                 for i in range(0, len(lm), 2):
-                    print(lm[i:i+2])
-                    # print(util.to_img_coord(lm[i:i+2], (224, 224)))
+                    img_coord = util.to_img_coord(lm[i:i+2], (224, 224))
                     plt.plot(
-                        *util.to_img_coord(lm[i:i+2], (224, 224)),
-                        marker='x', color="red"
+                        *img_coord,
+                        marker='.', color="red"
+                    )
+                    plt.text(
+                        *img_coord,
+                        str(int(i/2))
                     )
                 plt.imshow(to_pil(img).convert("RGB"))
                 plt.show()
