@@ -10,7 +10,7 @@ poetry install
 landmark-toolの利用
 
 https://github.com/donydchen/landmark-tool
-をpyQt5に対応+点の番号が出るようにカスタマイズしている。
+をpyQt5に対応 + 点の番号が出るようにカスタマイズしている。
 
 ```
 $ git clone https://github.com/donydchen/landmark-tool.git

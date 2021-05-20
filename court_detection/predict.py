@@ -9,7 +9,7 @@ if __name__ == "__main__":
     model_path = sys.argv[1]
     img_path = sys.argv[2]
 
-    net = model.Net(32, grayscale=True)
+    net = model.Net(32, grayscale=False)
     net.to('cpu')
     net.load_state_dict(torch.load(model_path))
 
@@ -33,7 +33,7 @@ if __name__ == "__main__":
                 img = sample['image'][d, :, :, :]
                 for i in range(0, len(lm), 2):
                     print(lm[i:i+2])
-                    #print(util.to_img_coord(lm[i:i+2], (224, 224)))
+                    # print(util.to_img_coord(lm[i:i+2], (224, 224)))
                     plt.plot(
                         *util.to_img_coord(lm[i:i+2], (224, 224)),
                         marker='x', color="red"

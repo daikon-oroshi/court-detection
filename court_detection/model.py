@@ -66,24 +66,6 @@ class RMSELoss(nn.Module):
         return l2
 
 
-class WingLoss(nn.Module):
-    def __init__(self, omega=10, epsilon=2):
-        super(WingLoss, self).__init__()
-        self.omega = omega
-        self.epsilon = epsilon
-
-    def forward(self, pred, target):
-        y = target
-        y_hat = pred
-        delta_y = (y - y_hat).abs()
-        delta_y1 = delta_y[delta_y < self.omega]
-        delta_y2 = delta_y[delta_y >= self.omega]
-        loss1 = self.omega * torch.log(1 + delta_y1 / self.epsilon)
-        C = self.omega - self.omega * math.log(1 + self.omega / self.epsilon)
-        loss2 = delta_y2 - C
-        return (loss1.sum() + loss2.sum()) / (len(loss1) + len(loss2))
-
-
 def create_dataloader(img_paths: str, land_path: str, batch_size=4):
     phase = ['train', 'val']
     size = (224, 224)
@@ -93,17 +75,19 @@ def create_dataloader(img_paths: str, land_path: str, batch_size=4):
     data_transforms = {
         phase[0]: torchvision.transforms.Compose([
             Resize(size),
-            # RandomErasing(scale=(0.02, 0.15)),
+            RandomErasing(scale=(0.02, 0.15)),
             VerticalFlip(),
             ToTensor(),
-            # Normalize(norm_mean, norm_std)
-            Grayscale()
+            # Grayscale(),
+            # Normalize([0.5], [0.5]),
+            Normalize(norm_mean, norm_std)
         ]),
         phase[1]: torchvision.transforms.Compose([
             Resize(size),
             ToTensor(),
-            # Normalize(norm_mean, norm_std),
-            Grayscale()
+            # Grayscale(),
+            # Normalize([0.5], [0.5])
+            Normalize(norm_mean, norm_std)
         ]),
     }
 

@@ -90,27 +90,26 @@ if __name__ == "__main__":
     land_path = sys.argv[2]
     save_path = sys.argv[3]
 
-    net = model.Net(32, grayscale=True)
+    net = model.Net(32, grayscale=False)
     # model_ft = model.create_model(32)
     net.to('cpu')
     dataloaders, dataset_sizes = model.create_dataloader(
         img_path, land_path, 8)
-    learning_rate = 1e-6
+    learning_rate = 1e-4
     optimizer_ft = torch.optim.Adam(net.parameters(), lr=learning_rate)
     # optimizer_ft, exp_lr_scheduler = model.create_optimizer(model_ft)
     criterion = torch.nn.MSELoss()
-    # criterion = model.WingLoss()
-    """
-    scheduler = torch.optim.lr_scheduler.MultiStepLR(
-        optimizer_ft, milestones=[25, 40], gamma=0.01)
-    """
+
+    scheduler = None
+    # scheduler = torch.optim.lr_scheduler.MultiStepLR(
+    #    optimizer_ft, milestones=[20, 40], gamma=0.1)
 
     model_tr = train(
         'cpu',
         net,
         criterion,
         optimizer_ft,
-        None,
+        scheduler,
         dataloaders,
         dataset_sizes,
         num_epochs=50
