@@ -1,13 +1,13 @@
-
-
+### moduleのインストール
 
 ```
-poetry config virtualenvs.in-project true
-poetry shell
-poetry install
+$ poetry config virtualenvs.in-project true
+$ poetry shell
+$ poetry install
 ```
 
-landmark-toolの利用
+
+### landmark-toolの利用
 
 https://github.com/donydchen/landmark-tool
 をpyQt5に対応 + 点の番号が出るようにカスタマイズしている。
