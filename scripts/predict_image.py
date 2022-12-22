@@ -5,7 +5,7 @@ from PIL import Image
 from matplotlib import pyplot as plt
 from . import model
 from . import util
-from .data.transforms import (
+from court_detection.data.transforms import (
     Resize,
     ToTensor,
 )

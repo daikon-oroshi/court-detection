@@ -2,8 +2,8 @@ import sys
 import torch
 import torchvision as tv
 from matplotlib import pyplot as plt
-from . import model
-from . import util
+from court_detection import model, util
+
 
 if __name__ == "__main__":
     model_path = sys.argv[1]

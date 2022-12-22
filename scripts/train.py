@@ -1,6 +1,6 @@
 import sys
 import torch
-from . import model
+from court_detection import model
 import time
 import copy
 import math
