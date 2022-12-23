@@ -3,11 +3,25 @@ import torch
 import torchvision as tv
 from matplotlib import pyplot as plt
 from court_detection import model, util
+from court_detection.env import env
+from court_detection.consts.train_phase import TrainPhase
+import argparse
+from pathlib import Path
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    '--model_path', type=str,
+    default=str(Path(env.MODELS_DIR) / Path(env.DEFAULT_MODEL_FILE_NAME)),
+    help='model file path'
+)
+
+args = parser.parse_args()
 
 
 if __name__ == "__main__":
-    model_path = sys.argv[1]
-    img_path = sys.argv[2]
+    model_path = args.model_path
+    img_path = env.VALID_DATA_DIR
 
     net = model.Net(32, grayscale=False)
     net.to('cpu')
@@ -15,13 +29,12 @@ if __name__ == "__main__":
 
     net.eval()
 
-    land_path = "data/train_data/landmarks.json"
+    land_path = env.LANDMARK_FILE
     dataloaders, _ = model.create_dataloader(img_path, land_path, 1)
-    dataloaders = iter(dataloaders['val'])
 
     with torch.no_grad():
         to_pil = tv.transforms.ToPILImage()
-        for sample in dataloaders:
+        for sample in iter(dataloaders[TrainPhase.VALIDATE]):
 
             lms = net(sample['image'].to('cpu'))
             print(sample['landmarks'])

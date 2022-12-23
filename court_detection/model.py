@@ -2,9 +2,8 @@ import os
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import torch.nn.functional as F
 import torchvision
-import math
+from court_detection.consts.train_phase import TrainPhase
 
 from .data.data_set import BdcDataSet
 from .data.transforms import (
@@ -67,7 +66,10 @@ class RMSELoss(nn.Module):
 
 
 def create_dataloader(img_paths: str, land_path: str, batch_size=4):
-    phase = ['train', 'val']
+    phase = [
+        TrainPhase.TRAIN,
+        TrainPhase.VALIDATE
+    ]
     size = (224, 224)
     norm_mean = [0.485, 0.456, 0.406]
     norm_std = [0.229, 0.224, 0.225]

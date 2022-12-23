@@ -1,24 +1,37 @@
+from typing import Tuple
 
 FACTOR = 1
 
 
-def to_ml(x, img_x):
+def _to_ml(x: float, img_x: int) -> float:
+    """
+    0 <= x <= img_x -> -1 <= x <= 1
+    """
     return ((x / img_x) - 0.5) * FACTOR
 
 
-def to_img(x, img_x):
+def _to_img(x: float, img_x: int) -> float:
+    """
+    -1 <= x <= 1 -> 0 <= x <= img_x
+    """
     return ((x / FACTOR) + 0.5) * img_x
 
 
-def to_ml_coord(pt, img_size):
-    return [
-        to_ml(pt[0], img_size[0]),
-        to_ml(pt[1], img_size[1])
-    ]
+def to_ml_coord(
+    pt: Tuple[float, float],
+    img_size: Tuple[int, int]
+) -> Tuple[float, float]:
+    return (
+        _to_ml(pt[0], img_size[0]),
+        _to_ml(pt[1], img_size[1])
+    )
 
 
-def to_img_coord(pt, img_size):
+def to_img_coord(
+    pt: Tuple[float, float],
+    img_size: Tuple[int, int]
+) -> Tuple[float, float]:
     return [
-        to_img(pt[0], img_size[0]),
-        to_img(pt[1], img_size[1])
+        _to_img(pt[0], img_size[0]),
+        _to_img(pt[1], img_size[1])
     ]

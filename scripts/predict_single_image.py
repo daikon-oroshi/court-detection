@@ -1,19 +1,35 @@
-import sys
 import torch
 import torchvision as tv
 from PIL import Image
 from matplotlib import pyplot as plt
-from . import model
-from . import util
+from court_detection import model, util
 from court_detection.data.transforms import (
     Resize,
     ToTensor,
 )
+from court_detection.env import env
+import argparse
+from pathlib import Path
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    '--model_path', type=str,
+    default=str(Path(env.MODELS_DIR) / Path(env.DEFAULT_MODEL_FILE_NAME)),
+    help='model file path'
+)
+parser.add_argument(
+    '--img_path',
+    type=str,
+    required=True,
+    help='image path'
+)
+
+args = parser.parse_args()
 
 
 if __name__ == "__main__":
-    model_path = sys.argv[1]
-    img_path = sys.argv[2]
+    model_path = args.model_path
+    img_path = args.img_path
 
     net = model.Net(32, grayscale=False)
     net.to('cpu')

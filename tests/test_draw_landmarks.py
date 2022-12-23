@@ -6,12 +6,13 @@ from court_detection.data.transforms import (
     Resize, RandomErasing,
     HorizontalFlip, Grayscale
 )
+from court_detection.env import env
 
 
 class TestDrawLandmark(object):
 
     IMG_PATH = "../resources/image/court"
-    LAND_PATH = "../resources/image/court/landmarks.json"
+    LAND_PATH = env.LANDMARK_FILE
 
     def test_draw_landmark(self):
         size = (224, 224)
