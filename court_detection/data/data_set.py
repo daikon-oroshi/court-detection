@@ -31,30 +31,30 @@ class BdcDataSet(Dataset):
 
     def __getitem__(self, idx):
         p = self.image_files[idx]
-        img = Image.open(str(p)).convert('RGB')
-        img.load()
-        lmarks = self.landmarks.get(p.name, [])
+        with Image.open(str(p)).convert('RGB') as img:
+            img.load()
+            lmarks = self.landmarks.get(p.name, [])
 
-        sample = {
-            'image': img,
-            'landmarks': lmarks
-        }
+            sample = {
+                'image': img,
+                'landmarks': lmarks
+            }
 
-        if self.transform:
-            sample = self.transform(sample)
+            if self.transform:
+                sample = self.transform(sample)
 
-        return sample
+            return sample
 
     def __normalize_landmarks(self, landmarks) -> t.Dict:
         norm_lands = {}
 
         for p in self.image_files:
             lmarks = landmarks[p.name]
-            img = Image.open(str(p)).convert('RGB')
-            img.load()
-            norm_lands[p.name] = list(map(
-                lambda x: util.to_ml_coord(x, img.size),
-                lmarks
-            ))
+            with Image.open(str(p)).convert('RGB') as img:
+                img.load()
+                norm_lands[p.name] = list(map(
+                    lambda x: util.to_ml_coord(x, img.size),
+                    lmarks
+                ))
 
         return norm_lands

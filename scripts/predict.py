@@ -1,4 +1,3 @@
-import sys
 import torch
 import torchvision as tv
 from matplotlib import pyplot as plt
@@ -23,9 +22,10 @@ if __name__ == "__main__":
     model_path = args.model_path
     img_path = env.VALID_DATA_DIR
 
-    net = model.Net(32, grayscale=False)
+    net = model.Net(32, grayscale=False, pretrained=False)
     net.to('cpu')
-    net.load_state_dict(torch.load(model_path))
+    _, model_state, _ = model.load_state(model_path)
+    net.load_state_dict(model_state)
 
     net.eval()
 

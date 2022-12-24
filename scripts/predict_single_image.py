@@ -33,7 +33,8 @@ if __name__ == "__main__":
 
     net = model.Net(32, grayscale=False)
     net.to('cpu')
-    net.load_state_dict(torch.load(model_path))
+    _, model_state, _ = model.load_state(model_path)
+    net.load_state_dict(model_state)
 
     net.eval()
 

@@ -2,6 +2,7 @@ import torch
 import time
 import copy
 import math
+from court_detection import model
 from court_detection.consts.train_phase import TrainPhase
 
 
@@ -13,15 +14,18 @@ def train(
     scheduler,
     dataloaders,
     dataset_sizes,
-    num_epochs=25
+    save_path,
+    start_epoch=0,
+    num_epochs=25,
+    save_steps=10
 ):
     since = time.time()
 
     best_model_wts = copy.deepcopy(net.state_dict())
     best_loss = None
 
-    for epoch in range(num_epochs):
-        print('Epoch {}/{}'.format(epoch, num_epochs - 1))
+    for epoch in range(start_epoch, num_epochs + 1):
+        print('Epoch {}/{}'.format(epoch, num_epochs))
         print('-' * 10)
 
         # Each epoch has a training and validation phase
@@ -70,9 +74,15 @@ def train(
                     best_model_wts = copy.deepcopy(net.state_dict())
 
                 if best_loss is not None:
-                    print('BEST Loss: {:.4f}'.format(best_loss))
+                    print('BEST Loss: {:.4f}\n'.format(best_loss))
 
-        print()
+        if epoch % save_steps == 0:
+            model.save_state(
+                save_path,
+                epoch,
+                net,
+                optimizer
+            )
 
     time_elapsed = time.time() - since
     print('Training complete in {:.0f}m {:.0f}s'.format(

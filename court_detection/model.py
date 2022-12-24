@@ -1,8 +1,10 @@
+from typing import Dict, Tuple
 import os
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import torchvision
+from torchvision.models import ResNet152_Weights
 from court_detection.consts.train_phase import TrainPhase
 
 from .data.data_set import BdcDataSet
@@ -21,8 +23,11 @@ class Net(nn.Module):
     def __init__(self, output_size, pretrained=True, grayscale=False):
         super(Net, self).__init__()
 
-        resnet = torchvision.models.resnet152(pretrained=pretrained)
-        # resnet = torchvision.models.resnet18(pretrained=pretrained)
+        weights = ResNet152_Weights.DEFAULT if not pretrained else None
+        resnet = torchvision.models.resnet152(
+            weights=weights
+        )
+
         if grayscale:
             resnet.conv1 = nn.Conv2d(
                 1, 64, kernel_size=7, stride=2, padding=3, bias=False)
@@ -121,3 +126,23 @@ def create_optimizer(model_ft):
         optimizer_ft, step_size=7, gamma=0.1)
 
     return optimizer_ft, exp_lr_scheduler
+
+
+def save_state(path: str, epoch: int, model: nn.Module, optimizer: torch.optim.Optimizer):
+    torch.save(
+        {
+            "epoch": epoch,
+            "model": model.state_dict(),
+            "optimizer": optimizer.state_dict()
+        },
+        path
+    )
+
+
+def load_state(
+    path: str
+) -> Tuple[int, Dict, Dict]:
+    loaded_obj = torch.load(path)
+    return loaded_obj["epoch"], \
+        loaded_obj["model"], \
+        loaded_obj["optimizer"]
