@@ -20,7 +20,7 @@ args = parser.parse_args()
 
 if __name__ == "__main__":
     model_path = args.model_path
-    img_path = env.VALID_DATA_DIR
+    img_path = env.DATA_DIR
 
     net = model.Net(32, grayscale=False, pretrained=False)
     net.to('cpu')

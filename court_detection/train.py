@@ -3,7 +3,9 @@ import time
 import copy
 import math
 from court_detection import model
+from court_detection.env import env
 from court_detection.consts.train_phase import TrainPhase
+from torch.utils.tensorboard import SummaryWriter
 
 
 def train(
@@ -23,6 +25,7 @@ def train(
 
     best_model_wts = copy.deepcopy(net.state_dict())
     best_loss = None
+    writer = SummaryWriter(log_dir=env.LOG_DIR)
 
     for epoch in range(start_epoch, num_epochs + 1):
         print('Epoch {}/{}'.format(epoch, num_epochs))
@@ -59,10 +62,10 @@ def train(
                 running_loss += loss.item() * inputs.size(0)
 
             epoch_loss = running_loss / dataset_sizes[phase]
-            print('{} Loss: {:.4f}'.format(phase, epoch_loss))
+            writer.add_scalar(f"{phase} Loss", epoch_loss, epoch)
 
             if phase == TrainPhase.TRAIN:
-                print('LR: {}'.format(optimizer.param_groups[0]['lr']))
+                writer.add_scalar("lr", optimizer.param_groups[0]['lr'], epoch)
                 if scheduler is not None:
                     scheduler.step()
 
@@ -74,7 +77,7 @@ def train(
                     best_model_wts = copy.deepcopy(net.state_dict())
 
                 if best_loss is not None:
-                    print('BEST Loss: {:.4f}\n'.format(best_loss))
+                    writer.add_scalar("BEST Loss", best_loss, epoch)
 
         if epoch % save_steps == 0:
             model.save_state(
@@ -88,6 +91,8 @@ def train(
     print('Training complete in {:.0f}m {:.0f}s'.format(
         time_elapsed // 60, time_elapsed % 60))
     print('Best val Loss: {:4f}'.format(best_loss))
+
+    writer.close()
 
     # load best model weights
     net.load_state_dict(best_model_wts)

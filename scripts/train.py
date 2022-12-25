@@ -65,5 +65,5 @@ if __name__ == "__main__":
         dataset_sizes,
         model_path,
         start_epoch=epoch,
-        num_epochs=150,
+        num_epochs=1000,
     )

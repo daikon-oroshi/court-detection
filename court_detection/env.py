@@ -87,6 +87,8 @@ class Env(BaseSettings):
 
     DEFAULT_MODEL_FILE_NAME: str = "model.pth"
 
+    LOG_DIR: str
+
     class Config:
         case_sensitive = True
         env_file = '.env'
