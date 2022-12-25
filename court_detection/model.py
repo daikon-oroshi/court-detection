@@ -23,7 +23,7 @@ class Net(nn.Module):
     def __init__(self, output_size, pretrained=True, grayscale=False):
         super(Net, self).__init__()
 
-        weights = ResNet152_Weights.DEFAULT if not pretrained else None
+        weights = ResNet152_Weights.DEFAULT if pretrained else None
         resnet = torchvision.models.resnet152(
             weights=weights
         )
