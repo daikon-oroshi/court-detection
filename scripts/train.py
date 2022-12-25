@@ -14,11 +14,16 @@ parser.add_argument(
     default=env.DEFAULT_MODEL_FILE_NAME,
     help='name of model file'
 )
+parser.add_argument(
+    '--device', type=str,
+    default='cpu',
+    help='device'
+)
 
 args = parser.parse_args()
 
 
-LEARNING_RATE = 1e-4
+LEARNING_RATE = 1e-5
 
 
 def load_model(
@@ -48,7 +53,7 @@ if __name__ == "__main__":
         f"save_path: {model_path} is invalid path."
 
     epoch, net, optimizer_ft = load_model(model_path)
-    net.to('cpu')
+    net.to(args.device)
     dataloaders, dataset_sizes = model.create_dataloader(
         img_data_path, land_path, 8
     )
@@ -56,7 +61,7 @@ if __name__ == "__main__":
     scheduler = None
 
     model_tr = train(
-        'cpu',
+        args.device,
         net,
         criterion,
         optimizer_ft,

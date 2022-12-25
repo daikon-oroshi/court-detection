@@ -1,3 +1,4 @@
+from typing import Dict, Any
 import torch
 import time
 import copy
@@ -9,17 +10,17 @@ from torch.utils.tensorboard import SummaryWriter
 
 
 def train(
-    device,
-    net,
+    device: str,
+    net: torch.nn.Module,
     criterion,
-    optimizer,
+    optimizer: torch.optim.Optimizer,
     scheduler,
-    dataloaders,
-    dataset_sizes,
-    save_path,
-    start_epoch=0,
-    num_epochs=25,
-    save_steps=10
+    dataloaders: Dict[TrainPhase, Any],
+    dataset_sizes: Dict[TrainPhase, int],
+    save_path: str,
+    start_epoch: int = 0,
+    num_epochs: int = 25,
+    save_steps: int = 10
 ):
     since = time.time()
 
@@ -34,9 +35,9 @@ def train(
         # Each epoch has a training and validation phase
         for phase in [TrainPhase.TRAIN, TrainPhase.VALIDATE]:
             if phase == TrainPhase.TRAIN:
-                net.train()  # Set model to training mode
+                net.train()
             else:
-                net.eval()   # Set model to evaluate mode
+                net.eval()
 
             running_loss = 0.0
 
@@ -62,7 +63,7 @@ def train(
                 running_loss += loss.item() * inputs.size(0)
 
             epoch_loss = running_loss / dataset_sizes[phase]
-            writer.add_scalar(f"{phase} Loss", epoch_loss, epoch)
+            writer.add_scalar(f"Loss/{phase}", epoch_loss, epoch)
 
             if phase == TrainPhase.TRAIN:
                 writer.add_scalar("lr", optimizer.param_groups[0]['lr'], epoch)
@@ -77,7 +78,7 @@ def train(
                     best_model_wts = copy.deepcopy(net.state_dict())
 
                 if best_loss is not None:
-                    writer.add_scalar("BEST Loss", best_loss, epoch)
+                    writer.add_scalar("Loss/BEST", best_loss, epoch)
 
         if epoch % save_steps == 0:
             model.save_state(
