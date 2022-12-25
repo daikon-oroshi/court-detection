@@ -5,7 +5,7 @@ description = ""
 authors = ["oroshi <oroshinekko@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "3.10.9"
+python = "^3.10.9"
 torch = "^1.13.0"
 torchvision = "^0.14.1"
 pydantic = "^1.10.2"
