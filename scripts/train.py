@@ -19,6 +19,11 @@ parser.add_argument(
     default='cpu',
     help='device'
 )
+parser.add_argument(
+    '--epochs', type=int,
+    default=100,
+    help='number of epochs'
+)
 
 args = parser.parse_args()
 
@@ -70,5 +75,5 @@ if __name__ == "__main__":
         dataset_sizes,
         model_path,
         start_epoch=epoch,
-        num_epochs=1000,
+        num_epochs=args.epochs,
     )
