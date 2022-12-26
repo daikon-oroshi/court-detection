@@ -23,9 +23,10 @@ if __name__ == "__main__":
     img_path = env.DATA_DIR
 
     net = model.Net(32, grayscale=False, pretrained=False)
-    net.to('cpu')
+
     _, model_state, _ = model.load_state(model_path)
     net.load_state_dict(model_state)
+    net.to('cpu')
 
     net.eval()
 

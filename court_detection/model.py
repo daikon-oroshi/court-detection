@@ -140,9 +140,10 @@ def save_state(path: str, epoch: int, model: nn.Module, optimizer: torch.optim.O
 
 
 def load_state(
-    path: str
+    path: str,
+    device: str = "cpu"
 ) -> Tuple[int, Dict, Dict]:
-    loaded_obj = torch.load(path)
+    loaded_obj = torch.load(path, map_location=device)
     return loaded_obj["epoch"], \
         loaded_obj["model"], \
         loaded_obj["optimizer"]

@@ -42,7 +42,7 @@ def load_model(
     if not_exists_model:
         return 1, net, optimizer_ft
 
-    epoch, model_state, optim_state = model.load_state(model_path)
+    epoch, model_state, optim_state = model.load_state(model_path, args.device)
     net.load_state_dict(model_state)
     optimizer_ft.load_state_dict(optim_state)
 
