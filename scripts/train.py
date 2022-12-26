@@ -37,12 +37,17 @@ def load_model(
 
     not_exists_model = model_path is None or not Path(model_path).exists()
     net = model.Net(32, grayscale=False, pretrained=not_exists_model)
+    net.to(args.device)
+
     optimizer_ft = torch.optim.Adam(net.parameters(), lr=LEARNING_RATE)
 
     if not_exists_model:
         return 1, net, optimizer_ft
 
-    epoch, model_state, optim_state = model.load_state(model_path, args.device)
+    epoch, model_state, optim_state = model.load_state(
+        model_path,
+        device=args.device
+    )
     net.load_state_dict(model_state)
     optimizer_ft.load_state_dict(optim_state)
 
@@ -58,7 +63,6 @@ if __name__ == "__main__":
         f"save_path: {model_path} is invalid path."
 
     epoch, net, optimizer_ft = load_model(model_path)
-    net.to(args.device)
     dataloaders, dataset_sizes = model.create_dataloader(
         img_data_path, land_path, 8
     )
