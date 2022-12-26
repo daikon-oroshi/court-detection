@@ -7,6 +7,7 @@ from court_detection import model
 from court_detection.env import env
 from court_detection.consts.train_phase import TrainPhase
 from torch.utils.tensorboard import SummaryWriter
+import tqdm
 
 
 def train(
@@ -28,9 +29,11 @@ def train(
     best_loss = None
     writer = SummaryWriter(log_dir=env.LOG_DIR)
 
-    for epoch in range(start_epoch, num_epochs + 1):
-        print('Epoch {}/{}'.format(epoch, num_epochs))
-        print('-' * 10)
+    for epoch in tqdm.tqdm(
+        range(start_epoch, num_epochs + 1),
+        initial=start_epoch+1,
+        total=num_epochs
+    ):
 
         # Each epoch has a training and validation phase
         for phase in [TrainPhase.TRAIN, TrainPhase.VALIDATE]:

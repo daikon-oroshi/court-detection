@@ -8,6 +8,9 @@ from court_detection.env import env
 import argparse
 from pathlib import Path
 
+LEARNING_RATE = 1e-5
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument(
     '--save_model_name', type=str,
@@ -24,20 +27,24 @@ parser.add_argument(
     default=100,
     help='number of epochs'
 )
+parser.add_argument(
+    '--lr', type=float,
+    default=LEARNING_RATE,
+    help='lr'
+)
 
 args = parser.parse_args()
 
 
-LEARNING_RATE = 1e-5
-
-
 def load_model(
-    model_path: Optional[str]
+    model_path: Optional[str],
+    device: str,
+    lr: float
 ) -> Tuple[int, nn.Module, Optional[optim.Optimizer]]:
 
     not_exists_model = model_path is None or not Path(model_path).exists()
     net = model.Net(32, grayscale=False, pretrained=not_exists_model)
-    net.to(args.device)
+    net.to(device)
 
     optimizer_ft = torch.optim.Adam(net.parameters(), lr=LEARNING_RATE)
 
@@ -46,10 +53,11 @@ def load_model(
 
     epoch, model_state, optim_state = model.load_state(
         model_path,
-        device=args.device
+        device=device
     )
     net.load_state_dict(model_state)
     optimizer_ft.load_state_dict(optim_state)
+    optimizer_ft.param_groups[0]['lr'] = lr
 
     return epoch, net, optimizer_ft
 
@@ -62,7 +70,12 @@ if __name__ == "__main__":
     assert model_path.parent.is_dir(), \
         f"save_path: {model_path} is invalid path."
 
-    epoch, net, optimizer_ft = load_model(model_path)
+    epoch, net, optimizer_ft = load_model(
+        model_path,
+        args.device,
+        args.lr
+    )
+
     dataloaders, dataset_sizes = model.create_dataloader(
         img_data_path, land_path, 8
     )
