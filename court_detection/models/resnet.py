@@ -1,5 +1,3 @@
-from typing import Dict, Tuple
-
 import torch
 import torch.nn as nn
 import torchvision
@@ -23,7 +21,7 @@ class Net(nn.Module):
         self.resnet_base = nn.Sequential(*list(resnet.children())[:-1])
         self.fc = nn.Linear(num_ftrs, output_size)
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         h = self.resnet_base(x)
         h = h.view(h.size(0), -1)
         h = self.fc(h)
@@ -56,29 +54,3 @@ class RMSELoss(nn.Module):
             torch.pow(torch.sub(o, t), 2),
             dim=1))
         return l2
-
-
-def save_state(
-    path: str,
-    epoch: int,
-    model: nn.Module,
-    optimizer: torch.optim.Optimizer
-):
-    torch.save(
-        {
-            "epoch": epoch,
-            "model": model.state_dict(),
-            "optimizer": optimizer.state_dict()
-        },
-        path
-    )
-
-
-def load_state(
-    path: str,
-    device: str = "cpu"
-) -> Tuple[int, Dict, Dict]:
-    loaded_obj = torch.load(path, map_location=device)
-    return loaded_obj["epoch"], \
-        loaded_obj["model"], \
-        loaded_obj["optimizer"]

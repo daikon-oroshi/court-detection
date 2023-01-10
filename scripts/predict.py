@@ -1,7 +1,7 @@
 import torch
 import torchvision as tv
 from matplotlib import pyplot as plt
-from court_detection.models import resnet as model
+from court_detection.models import state, resnet, vit
 from court_detection.env import env
 from court_detection.consts.train_phase import TrainPhase
 from court_detection.data.loader import create_dataloader
@@ -26,9 +26,9 @@ if __name__ == "__main__":
     model_path = args.model_path
     img_path = env.DATA_DIR
 
-    net = model.Net(32, grayscale=False, pretrained=False)
+    net = vit.Net(32, grayscale=False, pretrained=False)
 
-    _, model_state, _ = model.load_state(model_path)
+    _, model_state, _ = state.load_state(model_path)
     net.load_state_dict(model_state)
     net.to('cpu')
 

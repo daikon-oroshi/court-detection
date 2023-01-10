@@ -3,7 +3,7 @@ import torch
 import time
 import copy
 import math
-from court_detection import model
+from court_detection.models import state
 from court_detection.env import env
 from court_detection.consts.train_phase import TrainPhase
 from torch.utils.tensorboard import SummaryWriter
@@ -31,7 +31,7 @@ def train(
 
     for epoch in tqdm.tqdm(
         range(start_epoch, num_epochs + 1),
-        initial=start_epoch+1,
+        initial=start_epoch,
         total=num_epochs
     ):
 
@@ -84,7 +84,7 @@ def train(
                     writer.add_scalar("Loss/BEST", best_loss, epoch)
 
         if epoch % save_steps == 0:
-            model.save_state(
+            state.save_state(
                 save_path,
                 epoch,
                 net,

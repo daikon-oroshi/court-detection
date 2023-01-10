@@ -43,7 +43,7 @@ def create_dataloader(img_paths: str, land_path: str, batch_size=4):
 
     data_transforms = {
         phase[0]: get_data_transforms(phase[0]),
-        phase[1]: torchvision.transforms.Compose(phase[1]),
+        phase[1]: get_data_transforms(phase[1]),
     }
 
     image_datasets = {

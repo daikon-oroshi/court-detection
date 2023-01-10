@@ -2,7 +2,7 @@ from typing import Optional, Tuple
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from court_detection.models import resnet as model
+from court_detection.models import resnet, state, vit
 from court_detection.train import train
 from court_detection.data.loader import create_dataloader
 from court_detection.env import env
@@ -44,7 +44,7 @@ def load_model(
 ) -> Tuple[int, nn.Module, Optional[optim.Optimizer]]:
 
     not_exists_model = model_path is None or not Path(model_path).exists()
-    net = model.Net(32, grayscale=False, pretrained=not_exists_model)
+    net = vit.Net(32, grayscale=False, pretrained=not_exists_model)
     net.to(device)
 
     optimizer_ft = torch.optim.Adam(net.parameters(), lr=LEARNING_RATE)
@@ -52,7 +52,7 @@ def load_model(
     if not_exists_model:
         return 1, net, optimizer_ft
 
-    epoch, model_state, optim_state = model.load_state(
+    epoch, model_state, optim_state = state.load_state(
         model_path,
         device=device
     )
