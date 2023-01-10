@@ -1,6 +1,6 @@
 from matplotlib import pyplot as plt
 import torchvision as tv
-from court_detection import util
+from court_detection.utils import coord
 from court_detection.data.data_set import BdcDataSet
 from court_detection.data.transforms import (
     Resize, RandomErasing,
@@ -29,7 +29,7 @@ class TestDrawLandmark(object):
 
             train_data = ds[i]
             for pt_idx, pt in enumerate(train_data['landmarks']):
-                img_coord = util.to_img_coord(pt, size)
+                img_coord = coord.to_img_coord(pt, size)
                 plt.plot(
                     *img_coord,
                     marker='.',

@@ -1,12 +1,14 @@
 import torch
 from PIL import Image
 from matplotlib import pyplot as plt
-from court_detection import model, util
+from court_detection import model
 from court_detection.env import env
 from court_detection.consts.train_phase import TrainPhase
-
+from court_detection.data.loader import get_data_transforms
 import argparse
 from pathlib import Path
+
+from court_detection.utils import coord
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -36,7 +38,7 @@ if __name__ == "__main__":
     net.eval()
 
     size = (224, 224)
-    transform = model.get_data_transforms(TrainPhase.VALIDATE)
+    transform = get_data_transforms(TrainPhase.VALIDATE)
 
     img: Image.Image = Image.open(img_path).convert('RGB')
     img.load()
@@ -49,7 +51,7 @@ if __name__ == "__main__":
 
         lm = lms[0, :].flatten().tolist()
         for i in range(0, len(lm), 2):
-            img_coord = util.to_img_coord(lm[i:i+2], img.size)
+            img_coord = coord.to_img_coord(lm[i:i+2], img.size)
             plt.plot(
                 *img_coord,
                 marker='.', color="red"

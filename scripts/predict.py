@@ -1,11 +1,15 @@
 import torch
 import torchvision as tv
 from matplotlib import pyplot as plt
-from court_detection import model, util
+from court_detection import model
 from court_detection.env import env
 from court_detection.consts.train_phase import TrainPhase
+from court_detection.data.loader import create_dataloader
 import argparse
 from pathlib import Path
+
+
+from court_detection.utils import coord
 
 
 parser = argparse.ArgumentParser()
@@ -31,7 +35,7 @@ if __name__ == "__main__":
     net.eval()
 
     land_path = env.LANDMARK_FILE
-    dataloaders, _ = model.create_dataloader(img_path, land_path, 1)
+    dataloaders, _ = create_dataloader(img_path, land_path, 1)
 
     with torch.no_grad():
         to_pil = tv.transforms.ToPILImage()
@@ -46,7 +50,7 @@ if __name__ == "__main__":
                 lm = lms[d, :].flatten().tolist()
                 img = sample['image'][d, :, :, :]
                 for i in range(0, len(lm), 2):
-                    img_coord = util.to_img_coord(lm[i:i+2], (224, 224))
+                    img_coord = coord.to_img_coord(lm[i:i+2], (224, 224))
                     plt.plot(
                         *img_coord,
                         marker='.', color="red"

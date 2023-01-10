@@ -4,6 +4,7 @@ import torch.nn as nn
 import torch.optim as optim
 from court_detection import model
 from court_detection.train import train
+from court_detection.data.loader import create_dataloader
 from court_detection.env import env
 import argparse
 from pathlib import Path
@@ -76,7 +77,7 @@ if __name__ == "__main__":
         args.lr
     )
 
-    dataloaders, dataset_sizes = model.create_dataloader(
+    dataloaders, dataset_sizes = create_dataloader(
         img_data_path, land_path, 8
     )
     criterion = torch.nn.MSELoss()

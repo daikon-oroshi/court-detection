@@ -5,7 +5,7 @@ from pathlib import Path
 from PIL import Image
 from torch.utils.data import Dataset
 
-from .. import util
+from ..utils import coord
 
 
 class BdcDataSet(Dataset):
@@ -53,7 +53,7 @@ class BdcDataSet(Dataset):
             with Image.open(str(p)).convert('RGB') as img:
                 img.load()
                 norm_lands[p.name] = list(map(
-                    lambda x: util.to_ml_coord(x, img.size),
+                    lambda x: coord.to_ml_coord(x, img.size),
                     lmarks
                 ))
 
