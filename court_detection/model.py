@@ -13,7 +13,7 @@ from .data.transforms import (
     Resize,
     HorizontalFlip,
     ToTensor,
-    Grayscale,
+    # Grayscale,
     Normalize
 )
 
@@ -70,32 +70,37 @@ class RMSELoss(nn.Module):
         return l2
 
 
+def get_data_transforms(phase: TrainPhase) -> torchvision.transforms.Compose:
+    size = (224, 224)
+    norm_mean = [0.485, 0.456, 0.406]
+    norm_std = [0.229, 0.224, 0.225]
+    re_scale = (0.02, 0.15)
+
+    trans = [Resize(size)]
+    if phase == TrainPhase.TRAIN:
+        trans.extend([
+            RandomErasing(scale=re_scale),
+            HorizontalFlip()
+        ])
+    trans.extend([
+        ToTensor(),
+        # Grayscale(),
+        # Normalize([0.5], [0.5]),
+        Normalize(norm_mean, norm_std)
+    ])
+
+    return torchvision.transforms.Compose(trans)
+
+
 def create_dataloader(img_paths: str, land_path: str, batch_size=4):
     phase = [
         TrainPhase.TRAIN,
         TrainPhase.VALIDATE
     ]
-    size = (224, 224)
-    norm_mean = [0.485, 0.456, 0.406]
-    norm_std = [0.229, 0.224, 0.225]
 
     data_transforms = {
-        phase[0]: torchvision.transforms.Compose([
-            Resize(size),
-            RandomErasing(scale=(0.02, 0.15)),
-            HorizontalFlip(),
-            ToTensor(),
-            # Grayscale(),
-            # Normalize([0.5], [0.5]),
-            Normalize(norm_mean, norm_std)
-        ]),
-        phase[1]: torchvision.transforms.Compose([
-            Resize(size),
-            ToTensor(),
-            # Grayscale(),
-            # Normalize([0.5], [0.5])
-            Normalize(norm_mean, norm_std)
-        ]),
+        phase[0]: get_data_transforms(phase[0]),
+        phase[1]: torchvision.transforms.Compose(phase[1]),
     }
 
     image_datasets = {
@@ -128,7 +133,12 @@ def create_optimizer(model_ft):
     return optimizer_ft, exp_lr_scheduler
 
 
-def save_state(path: str, epoch: int, model: nn.Module, optimizer: torch.optim.Optimizer):
+def save_state(
+    path: str,
+    epoch: int,
+    model: nn.Module,
+    optimizer: torch.optim.Optimizer
+):
     torch.save(
         {
             "epoch": epoch,
