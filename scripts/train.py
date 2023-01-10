@@ -2,7 +2,7 @@ from typing import Optional, Tuple
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from court_detection import model
+from court_detection.models import resnet as model
 from court_detection.train import train
 from court_detection.data.loader import create_dataloader
 from court_detection.env import env

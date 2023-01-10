@@ -2,7 +2,6 @@ from typing import Dict, Tuple
 
 import torch
 import torch.nn as nn
-import torch.optim as optim
 import torchvision
 from torchvision.models import ResNet152_Weights
 
@@ -57,16 +56,6 @@ class RMSELoss(nn.Module):
             torch.pow(torch.sub(o, t), 2),
             dim=1))
         return l2
-
-
-def create_optimizer(model_ft):
-    optimizer_ft = optim.SGD(model_ft.parameters(), lr=0.001, momentum=0.9)
-
-    # Decay LR by a factor of 0.1 every 7 epochs
-    exp_lr_scheduler = optim.lr_scheduler.StepLR(
-        optimizer_ft, step_size=7, gamma=0.1)
-
-    return optimizer_ft, exp_lr_scheduler
 
 
 def save_state(

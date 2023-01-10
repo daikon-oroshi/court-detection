@@ -1,7 +1,7 @@
 import torch
 import torchvision as tv
 from matplotlib import pyplot as plt
-from court_detection import model
+from court_detection.models import resnet as model
 from court_detection.env import env
 from court_detection.consts.train_phase import TrainPhase
 from court_detection.data.loader import create_dataloader
