@@ -1,4 +1,4 @@
-from typing import Tuple, List
+from typing import Tuple, List, Union
 import numbers
 from torchvision.transforms import functional as F
 from court_detection.data.types.marked_image import MarkedImage
@@ -8,7 +8,7 @@ class Squaring:
 
     def __init__(
         self,
-        fill: int | Tuple = 0
+        fill: Union[int, Tuple] = 0
     ):
         if not isinstance(fill, (numbers.Number, tuple, list)):
             raise TypeError("Got inappropriate fill arg")
