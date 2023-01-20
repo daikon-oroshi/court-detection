@@ -4,7 +4,8 @@ from court_detection.utils import coord
 from court_detection.data.data_set import BdcDataSet
 from court_detection.data.transforms import (
     Resize, RandomErasing,
-    HorizontalFlip, Grayscale
+    HorizontalFlip, Grayscale,
+    Squaring
 )
 from court_detection.env import env
 
@@ -18,6 +19,7 @@ class TestDrawLandmark(object):
         size = (224, 224)
         transform = tv.transforms.Compose(
             [
+                Squaring(),
                 Resize(size),
                 RandomErasing(),
                 HorizontalFlip(),

@@ -16,10 +16,10 @@ class HorizontalFlip:
         return -x
 
     def flip_landmarks(self, landmarks: List[Tuple[int, int]]):
-        mirror_lmarks = list(map(
-            lambda x: [self.mirror(x[0]), x[1]],
-            landmarks
-        ))
+        mirror_lmarks = [
+            [self.mirror(x[0]), x[1]]
+            for x in landmarks
+        ]
 
         lmarks = []
 
