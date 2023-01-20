@@ -1,4 +1,5 @@
 import torchvision
+from court_detection.data.types.marked_image import MarkedImage
 
 
 class RandomErasing:
@@ -14,7 +15,7 @@ class RandomErasing:
             p=p, scale=scale, ratio=ratio, value=value, inplace=inplace
         )
 
-    def __call__(self, sample):
+    def __call__(self, sample: MarkedImage) -> MarkedImage:
 
         to_tensor = torchvision.transforms.ToTensor()
         to_pil = torchvision.transforms.ToPILImage()

@@ -1,6 +1,7 @@
-import typing as t
+from typing import List, Tuple
 import PIL
 import random
+from court_detection.data.types.marked_image import MarkedImage
 
 
 class HorizontalFlip:
@@ -14,7 +15,7 @@ class HorizontalFlip:
     def mirror(self, x: float) -> float:
         return -x
 
-    def flip_landmarks(self, landmarks):
+    def flip_landmarks(self, landmarks: List[Tuple[int, int]]):
         mirror_lmarks = list(map(
             lambda x: [self.mirror(x[0]), x[1]],
             landmarks
@@ -47,7 +48,7 @@ class HorizontalFlip:
 
         return lmarks
 
-    def __call__(self, sample) -> t.Tuple:
+    def __call__(self, sample: MarkedImage) -> MarkedImage:
 
         if random.random() > self.p:
             return sample

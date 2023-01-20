@@ -1,5 +1,6 @@
 import torch
 import torchvision
+from ..types.marked_image import MarkedImage, MarkedImageTensor
 
 
 class ToTensor:
@@ -13,7 +14,7 @@ class ToTensor:
             lms.extend(lm)
         return lms
 
-    def __call__(self, sample):
+    def __call__(self, sample: MarkedImage) -> MarkedImageTensor:
 
         return {
             'image': self.transform(sample['image']),

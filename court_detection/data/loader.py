@@ -26,9 +26,8 @@ def get_data_transforms(phase: TrainPhase) -> torchvision.transforms.Compose:
             HorizontalFlip()
         ])
     trans.extend([
-        ToTensor(),
         # Grayscale(),
-        # Normalize([0.5], [0.5]),
+        ToTensor(),
         Normalize(norm_mean, norm_std)
     ])
 

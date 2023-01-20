@@ -94,7 +94,8 @@ def train(
     time_elapsed = time.time() - since
     print('Training complete in {:.0f}m {:.0f}s'.format(
         time_elapsed // 60, time_elapsed % 60))
-    print('Best val Loss: {:4f}'.format(best_loss))
+    if best_loss is not None:
+        print('Best val Loss: {:4f}'.format(best_loss))
 
     writer.close()
 

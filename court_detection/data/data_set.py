@@ -5,6 +5,11 @@ from pathlib import Path
 from PIL import Image
 from torch.utils.data import Dataset
 
+from .types.marked_image \
+    import MarkedImage, MarkedImageTensor
+from .transforms import (
+    ToTensor
+)
 from ..utils import coord
 
 
@@ -13,7 +18,10 @@ class BdcDataSet(Dataset):
     def __init__(self, img_path: str, land_path: str, transform=None):
         super().__init__()
 
-        self.transform = transform
+        if transform is None:
+            self.transform = ToTensor()
+        else:
+            self.transform = transform
 
         self.image_files = [
             p for p in Path(img_path).glob("**/*")
@@ -29,19 +37,18 @@ class BdcDataSet(Dataset):
     def __len__(self) -> int:
         return len(self.image_files)
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> MarkedImageTensor:
         p = self.image_files[idx]
         with Image.open(str(p)).convert('RGB') as img:
             img.load()
             lmarks = self.landmarks.get(p.name, [])
 
-            sample = {
+            sample: MarkedImage = {
                 'image': img,
                 'landmarks': lmarks
             }
 
-            if self.transform:
-                sample = self.transform(sample)
+            sample = self.transform(sample)
 
             return sample
 
