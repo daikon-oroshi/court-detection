@@ -8,7 +8,8 @@ from .transforms import (
     HorizontalFlip,
     ToTensor,
     # Grayscale,
-    Normalize
+    Normalize,
+    Squaring
 )
 from court_detection.consts.train_phase import TrainPhase
 
@@ -19,7 +20,10 @@ def get_data_transforms(phase: TrainPhase) -> torchvision.transforms.Compose:
     norm_std = [0.229, 0.224, 0.225]
     re_scale = (0.02, 0.15)
 
-    trans = [Resize(size)]
+    trans = [
+        Squaring(),
+        Resize(size)
+    ]
     if phase == TrainPhase.TRAIN:
         trans.extend([
             RandomErasing(scale=re_scale),
